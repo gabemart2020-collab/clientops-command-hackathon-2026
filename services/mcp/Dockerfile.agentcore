@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1.7
+# Phase 5.1 AgentCore MCP Runtime image.
+# Build from the repository root with Docker Buildx for linux/arm64.
+FROM --platform=linux/arm64 node:24-alpine AS builder
+
+WORKDIR /app
+
+RUN npm install --global pnpm@12.3.4
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+COPY packages ./packages
+COPY services/mcp ./services/mcp
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm build:mcp
+
+FROM --platform=linux/arm64 node:24-alpine AS runtime
+
+WORKDIR /app
+
+COPY --from=builder --chown=node:node /app /app
+
+# Supabase's Server root certificate is public trust material. Supply it at
+# build time so AgentCore does not spend scarce runtime environment capacity
+# carrying the PEM/base64 value.
+RUN --mount=type=secret,id=clientops_supabase_ca,required=true \
+    mkdir -p /app/certs && \
+    cp /run/secrets/clientops_supabase_ca /app/certs/clientops-supabase-ca.crt && \
+    chown node:node /app/certs/clientops-supabase-ca.crt && \
+    chmod 0444 /app/certs/clientops-supabase-ca.crt
+
+ENV NODE_ENV=production \
+    CLIENTOPS_MCP_RUNTIME=agentcore \
+    CLIENTOPS_DATABASE_TARGET=staging \
+    CLIENTOPS_DATABASE_WORKLOAD=mcp \
+    CLIENTOPS_ENVIRONMENT=staging \
+    CLIENTOPS_STAGING_DB_CA_FILE=/app/certs/clientops-supabase-ca.crt \
+    MCP_PROTOCOL_VERSION=2025-11-25 \
+    MCP_BIND_HOST=0.0.0.0 \
+    MCP_PORT=8000
+
+EXPOSE 8000
+
+USER node
+
+CMD ["node", "services/mcp/dist/main.js"]

@@ -1,0 +1,14 @@
+packages:
+  - apps/*
+  - services/*
+  - packages/*
+
+engineStrict: true
+saveExact: true
+strictDepBuilds: true
+allowBuilds:
+  esbuild@0.28.2: true
+  sharp@0.35.5: true
+
+overrides:
+  postcss: 8.5.28

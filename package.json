@@ -1,0 +1,52 @@
+{
+  "name": "clientops-command",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": "24.x",
+    "pnpm": ">=12 <13"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "build:libs": "pnpm --filter @clientops/contracts build && pnpm --filter @clientops/audit build && pnpm --filter @clientops/domain build && pnpm --filter @clientops/policy build && pnpm --filter @clientops/data build && pnpm --filter @clientops/agent build",
+    "typecheck": "pnpm build:libs && tsc --noEmit && pnpm -r typecheck",
+    "test": "vitest run",
+    "test:agent": "vitest run packages/agent/tests",
+    "test:data": "vitest run packages/data/src",
+    "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm smoke:mcp",
+    "dev:mcp": "pnpm --filter @clientops/mcp dev",
+    "build:mcp": "pnpm --filter @clientops/mcp build",
+    "test:mcp": "vitest run services/mcp/src",
+    "smoke:mcp": "pnpm --filter @clientops/mcp smoke",
+    "smoke:agent:live": "tsx scripts/smoke-agent.ts",
+    "eval:agent:live": "tsx scripts/eval-agent.ts",
+    "dev:web": "pnpm --filter @clientops/web dev",
+    "build:web": "pnpm --filter @clientops/web build",
+    "db:start": "tsx scripts/db.ts start",
+    "db:stop": "tsx scripts/db.ts stop",
+    "db:reset": "tsx scripts/db.ts reset",
+    "demo:reset": "tsx scripts/db.ts demo-reset",
+    "staging:mcp:preflight": "tsx scripts/staging-mcp-preflight.ts",
+    "dev:agent-runtime": "pnpm --filter @clientops/agent-runtime dev",
+    "build:agent-runtime": "pnpm --filter @clientops/agent-runtime build",
+    "test:agent-runtime": "vitest run services/agent-runtime/src",
+    "staging:agent-proposer:preflight": "tsx scripts/staging-agent-proposer-preflight.ts",
+    "staging:agent-proposer:certify": "tsx scripts/staging-agent-proposer-certify.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@modelcontextprotocol/client": "2.1.0",
+    "@types/node": "24.13.6",
+    "eslint": "10.11.0",
+    "prettier": "3.8.1",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "4.1.11"
+  }
+}

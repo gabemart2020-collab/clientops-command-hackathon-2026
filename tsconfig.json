@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "paths": {
+      "@clientops/contracts": ["./packages/contracts/src/index.ts"],
+      "@clientops/domain": ["./packages/domain/src/index.ts"],
+      "@clientops/data": ["./packages/data/src/index.ts"],
+      "@clientops/policy": ["./packages/policy/src/index.ts"],
+      "@clientops/audit": ["./packages/audit/src/index.ts"]
+    }
+  },
+  "include": ["tests/**/*.ts", "scripts/**/*.ts", "vitest.config.ts"]
+}

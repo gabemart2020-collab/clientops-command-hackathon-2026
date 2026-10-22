@@ -1,0 +1,25 @@
+{
+  "name": "@clientops/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm --filter @clientops/contracts build && pnpm --filter @clientops/audit build && pnpm --filter @clientops/domain build && pnpm --filter @clientops/policy build && pnpm --filter @clientops/data build && tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "dev": "pnpm build && pnpm start",
+    "smoke": "pnpm build && node dist/smoke.js"
+  },
+  "dependencies": {
+    "@clientops/contracts": "workspace:*",
+    "@clientops/data": "workspace:*",
+    "@clientops/domain": "workspace:*",
+    "@modelcontextprotocol/node": "2.1.0",
+    "@modelcontextprotocol/server": "2.1.0",
+    "zod": "4.6.5",
+    "@aws-sdk/client-secrets-manager": "3.1142.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.1.0"
+  }
+}

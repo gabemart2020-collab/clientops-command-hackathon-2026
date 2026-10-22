@@ -1,0 +1,23 @@
+{
+  "name": "@clientops/agent-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm --filter @clientops/contracts build && pnpm --filter @clientops/audit build && pnpm --filter @clientops/domain build && pnpm --filter @clientops/policy build && pnpm --filter @clientops/data build && pnpm --filter @clientops/agent build && tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "dev": "pnpm build && pnpm start"
+  },
+  "dependencies": {
+    "@clientops/agent": "workspace:*",
+    "@clientops/contracts": "workspace:*",
+    "@clientops/data": "workspace:*",
+    "@clientops/domain": "workspace:*",
+    "@clientops/policy": "workspace:*",
+    "@strands-agents/sdk": "1.19.0",
+    "jose": "6.2.12",
+    "json-canonicalize": "3.0.0",
+    "zod": "4.6.5"
+  }
+}

@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+.git
+.agents
+.codex
+.env
+.env.*
+report.txt
+coverage
+playwright-report
+test-results
+*.log

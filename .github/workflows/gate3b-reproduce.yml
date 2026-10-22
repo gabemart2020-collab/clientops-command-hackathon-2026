@@ -1,0 +1,103 @@
+name: Gate 3B Fresh Demo Reproduction
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - .github/workflows/gate3b-reproduce.yml
+      - scripts/gate3b-webdriver.mjs
+      - docs/GATE3B_REPRODUCIBILITY.md
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gate3b-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fresh-demo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CLIENTOPS_DATABASE_TARGET: local
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/clientops_dev
+      CLIENTOPS_MCP_RUNTIME: local
+      MCP_BIND_HOST: 127.0.0.1
+      MCP_PORT: '3001'
+      CLIENTOPS_MCP_URL: http://127.0.0.1:3001/mcp
+      DEMO_ORGANIZATION_ID: 10000000-0000-4000-8000-000000000001
+      CLIENTOPS_WEB_ACTION_WRITES_ENABLED: 'false'
+      CLIENTOPS_ENABLE_LOCAL_DEMO_ACTOR: 'false'
+      AWS_PROFILE: gate3b-no-credentials
+      AWS_SHARED_CREDENTIALS_FILE: /dev/null
+      AWS_CONFIG_FILE: /dev/null
+      AWS_EC2_METADATA_DISABLED: 'true'
+      AWS_REGION: us-east-1
+      NODE_ENV: development
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24.x'
+          package-manager-cache: false
+      - name: Install pinned pnpm
+        run: npm install --global "$(node -p 'require("./package.json").packageManager')"
+      - name: Frozen clean installation
+        run: pnpm install --frozen-lockfile
+      - name: Build workspace libraries for local services
+        run: pnpm build:libs
+      - name: Isolated seed and real browser reproduction
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+          unset AWS_WEB_IDENTITY_TOKEN_FILE AWS_ROLE_ARN
+          unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI AWS_CONTAINER_CREDENTIALS_FULL_URI
+
+          # Fail closed if this runner is not fresh; never reuse an existing database.
+          if docker ps -a --format '{{.Names}}' | grep -Fxq clientops-postgres; then
+            echo 'Gate 3B requires a fresh disposable database container.'
+            exit 1
+          fi
+          if ! command -v chromedriver >/dev/null || ! command -v google-chrome >/dev/null; then
+            echo 'Matching system Chrome and ChromeDriver are required.'
+            exit 1
+          fi
+
+          web_pid=""
+          mcp_pid=""
+          cleanup() {
+            if [ -n "$web_pid" ]; then kill "$web_pid" 2>/dev/null || true; fi
+            if [ -n "$mcp_pid" ]; then kill "$mcp_pid" 2>/dev/null || true; fi
+            docker rm -f clientops-postgres >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          pnpm db:start
+          pnpm demo:reset
+          echo 'PASS: synthetic seed loaded into fresh disposable local PostgreSQL'
+
+          pnpm dev:mcp > "$RUNNER_TEMP/gate3b-mcp.log" 2>&1 &
+          mcp_pid=$!
+          ready=0
+          for i in $(seq 1 45); do
+            if curl --silent --fail http://127.0.0.1:3001/health >/dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then echo 'Local MCP did not start.'; exit 1; fi
+          echo 'PASS: private local MCP health endpoint'
+
+          pnpm --filter @clientops/web exec next dev --hostname 127.0.0.1 --port 3000 > "$RUNNER_TEMP/gate3b-web.log" 2>&1 &
+          web_pid=$!
+          ready=0
+          for i in $(seq 1 75); do
+            if curl --silent --fail http://127.0.0.1:3000/demo >/dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then echo 'Private demo page did not start.'; exit 1; fi
+
+          node scripts/gate3b-webdriver.mjs
