@@ -1,10 +1,10 @@
 # Gate 3B — Fresh-Runner Demo Reproduction
 
-**Status:** Passed on the original development repository in PR #19. This independent submission snapshot requires a new CI run on its own release commit. No public deployment, AWS access, or submission is authorized.
+**Status (2026-10-22): PASSED.** The isolated submission repository's [Gate 3B GitHub Actions run](https://github.com/gabemart2020-collab/clientops-command-hackathon-2026/actions/runs/39814525695) succeeded on its first attempt against root commit `e4c041f501f948c5e6e61919e85fe1de2724b89c`, independently of the original development repository's PR #19 certification. No public deployment, AWS access, or Devpost submission is implied or authorized.
 
 ## Isolation and setup
 
-The dedicated `.github/workflows/gate3b-reproduce.yml` runs from a fresh GitHub-hosted Ubuntu 24.04 runner on pull requests that change this workflow or its test/documentation. GitHub token permission is `contents: read`, and there are no AWS or database secrets, external service credentials, artifact uploads, or exposed public ports.
+The dedicated `.github/workflows/gate3b-reproduce.yml` runs on pushes to `main` and on pull requests that change the workflow, its browser test script, or this documentation. It uses a fresh GitHub-hosted Ubuntu 24.04 runner. GitHub token permission is `contents: read`, and there are no AWS or database secrets, external service credentials, artifact uploads, or exposed public ports.
 
 It checks out a clean repository snapshot, installs Node.js 24 and pinned pnpm 12.3.4 with the frozen lockfile, builds local workspace libraries, and creates a **new disposable PostgreSQL 16 Docker container**. It refuses to proceed if a `clientops-postgres` container already exists on that runner. `pnpm demo:reset` then initializes the _disposable localhost database only_, applying migrations and synthetic Acme Labs data. This command is destructive and must never be used against Codespaces, Supabase staging, production, or any persistent dataset.
 

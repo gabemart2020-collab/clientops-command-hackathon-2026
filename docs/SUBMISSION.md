@@ -1,6 +1,6 @@
 # ClientOps Command — Hackathon Submission Readiness
 
-**State (2026-10-22): PREPARING; NOT SUBMITTED.** The owner verified the public YouTube video (2:56.68). The original development repository passed Gate 3B and standard CI. The independent submission snapshot still requires security, licensing, and fresh-repository certification before publication.
+**State (2026-10-22): PRIVATE SNAPSHOT CI CERTIFIED; DEVPOST NOT SUBMITTED.** The owner verified the public YouTube video (2:56.68). The isolated, history-free submission repository passed [Validate](https://github.com/gabemart2020-collab/clientops-command-hackathon-2026/actions/runs/39814525827) and [Gate 3B](https://github.com/gabemart2020-collab/clientops-command-hackathon-2026/actions/runs/39814525695) on root commit `e4c041f501f948c5e6e61919e85fe1de2724b89c`. Public visibility and Devpost submission require separate owner approval.
 
 **Primary track:** Alexa+ — **self-hosted MCP server**, using the official MCP **2025-11-25** protocol baseline and Streamable HTTP. The adjacent Next.js UI demonstrates the MCP-backed agent. **Do not claim** an Alexa+ Agent Skill or deployed Alexa+ integration.
 
@@ -28,7 +28,7 @@ The synthetic fixed-clock Acme Labs scenario is documented in [DEMO.md](DEMO.md)
 
 - [ ] Confirm individual/team eligibility and that submission account/track selections are correct.
 - [ ] Resolve the repository publishing option: **public with a visible open-source license** or **private with accepted access for all required reviewers**. Both paths require explicit owner approval; complete the independent source/security review before release.
-- [ ] Complete documented setup, safe demo dataset handling, validation commands, and judge testing instructions; confirm a fresh clone can be built and tested without access to developer-only secrets.
+- [x] Independently verify clean installation, disposable local demo dataset, validation/build jobs, and deterministic browser instructions on fresh GitHub-hosted runners without developer-only secrets. Manual judge setup remains documented in [DEMO.md](DEMO.md).
 - [x] Demonstration video URL recorded for review: https://youtu.be/HyUAR6tCCYQ (public access, content, language, duration, and potential sensitive information require independent verification).
 - [x] Owner verified the published demonstration video and its 2:56.68 duration.
 - [ ] Prepare text description: problem, target users, user workflow, verified features, AWS/MCP architecture, constraints, and measurable proof from the actual demo.
@@ -84,9 +84,13 @@ Follow the [safe recording runbook](DEMO.md). One real browser inference previou
 Original-source release hardening (PR #18) and fresh browser
 reproducibility (PR #19) are merged and certified.
 
-The isolated submission repository has not yet been created or published.
-The remaining gates are source and licensing review, clean-repository
-validation, owner publication approval, and final Devpost submission.
+The isolated submission repository was created as a private, history-free
+source snapshot with Apache-2.0 licensing and third-party attribution.
+On October 22, 2026, [Validate](https://github.com/gabemart2020-collab/clientops-command-hackathon-2026/actions/runs/39814525827) and
+[Gate 3B Fresh Demo Reproduction](https://github.com/gabemart2020-collab/clientops-command-hackathon-2026/actions/runs/39814525695) both succeeded on their
+first attempts against root commit `e4c041f501f948c5e6e61919e85fe1de2724b89c`.
+The remaining gates are owner publication approval, signed-out reviewer
+access verification, and final Devpost submission.
 
 ## 7. Scope of this preparation
 
