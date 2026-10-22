@@ -80,7 +80,7 @@ pnpm db:start
 
 **Fresh, disposable judge installation:** In a new, isolated local environment with no data requiring preservation, initialize the local PostgreSQL container and synthetic demonstration dataset using `pnpm db:start`, followed by `pnpm demo:reset`.
 
-**Destructive operation warning:** `pnpm demo:reset` applies migrations and runs `supabase/seed.sql`, which contains `TRUNCATE ... CASCADE` and replaces existing demo data. Never use it against our certified database, staging, production, or any database containing records that must be preserved. The original source passed Gate 3B fresh-runner certification; this release snapshot requires its own verification.
+**Destructive operation warning:** `pnpm demo:reset` applies migrations and runs `supabase/seed.sql`, which contains `TRUNCATE ... CASCADE` and replaces existing demo data. Never use it against our certified database, staging, production, or any database containing records that must be preserved. Both the original source and the isolated submission snapshot passed Gate 3B fresh-runner certification. This reset command remains restricted to a fresh disposable database.
 
 Follow the detailed **[safe demo and recording runbook](docs/DEMO.md)** for copyable MCP and Next.js commands, no-credential exploration, and explicitly authorized live Bedrock invocation. Keep forwarded development ports private.
 
@@ -108,7 +108,7 @@ Do not confuse this with `pnpm smoke:agent:live` or `pnpm eval:agent:live`: thos
 
 See [submission information](docs/SUBMISSION.md) and [hackathon requirements](docs/HACKATHON_REQUIREMENTS.md).
 
-This folder is an isolated, history-free submission candidate. It is not yet cleared for public release. Its original development repository remains private. Publication requires separate approval.
+This repository is an isolated, history-free hackathon submission snapshot, independently verified by standard validation and a fresh-runner deterministic browser reproduction. Its original development repository remains private. Making this submission repository public requires separate owner approval; publishing source code does not imply public application hosting.
 
 The current agent config source retains an older **Claude 3.5 Sonnet default** and a **12,000-token default budget**. Live demonstrations must set an available Bedrock model and a proven budget explicitly, as in [docs/DEMO.md](docs/DEMO.md). Cloud/staging architecture documentation and offline certifications do **not** establish public production availability.
 
